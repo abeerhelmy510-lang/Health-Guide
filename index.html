@@ -1,93 +1,76 @@
-DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دليل الصحة الشامل | عبير حلمي</title>
+    <title>دليل الصحة الذكي | عبير حلمي</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); text-align: center; }
-        .disclaimer { color: #721c24; background-color: #f8d7da; font-weight: bold; padding: 15px; margin: 20px 0; border-radius: 10px; border: 2px solid #f5c6cb; }
-        .search-box { background: #f8f9fa; padding: 25px; border-radius: 15px; border: 1px solid #dee2e6; margin-bottom: 20px; }
-        textarea { width: 90%; height: 100px; padding: 15px; border-radius: 10px; border: 1px solid #ddd; font-size: 1.1em; outline: none; resize: none; font-family: inherit; }
-        button { width: 94%; padding: 15px; background-color: #007bff; color: white; border: none; border-radius: 10px; font-size: 1.2em; cursor: pointer; transition: 0.3s; margin-top: 10px; }
-        button:hover { background-color: #0056b3; }
-        #result { margin-top: 25px; padding: 20px; border-radius: 15px; background-color: #ffffff; border-right: 8px solid #28a745; display: none; text-align: right; box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .symptom-item { margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px dashed #ddd; }
-        .symptom-item b { color: #d9534f; font-size: 1.1em; }
-        .programmer-credit { margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; color: #6c757d; }
-        .programmer-credit strong { color: #007bff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; line-height: 1.6; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; text-align: center; }
+        .disclaimer { color: #d93025; background: #fce8e6; padding: 15px; border-radius: 10px; border: 2px solid #d93025; font-weight: bold; margin-bottom: 20px; text-align: center; }
+        textarea { width: 100%; height: 120px; padding: 15px; border-radius: 12px; border: 2px solid #ddd; font-size: 1.1em; box-sizing: border-box; outline: none; transition: 0.3s; text-align: right; }
+        button { width: 100%; padding: 15px; background-color: #1a73e8; color: white; border: none; border-radius: 12px; font-size: 1.2em; cursor: pointer; margin-top: 15px; font-weight: bold; }
+        #result { margin-top: 25px; display: none; }
+        .card { background: #f8f9fa; border-right: 6px solid #1a73e8; padding: 15px; margin-bottom: 15px; border-radius: 8px; text-align: right; animation: slideIn 0.5s ease; }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        .card b { color: #d93025; font-size: 1.2em; }
+        .programmer { text-align: center; margin-top: 50px; padding-top: 20px; border-top: 1px solid #eee; color: #5f6368; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>🏥 دليلك الصحي الذكي</h1>
-    <p>اكتبي كل ما تشعرين به وسأقوم بتحليل الأعراض لكِ</p>
-    
-    <div class="disclaimer">
-        ⚠️ يجب استشارة الطبيب. الموقع استرشادي فقط وغير مسؤول عن أي خطأ في التشخيص.
-    </div>
+    <div class="disclaimer">⚠️ يجب استشارة الطبيب فوراً. الموقع للاسترشاد فقط.</div>
 
-    <div class="search-box">
-        <textarea id="symptomInput" placeholder="مثال: أشعر بصداع شديد مع كحة وحرارة وألم في العظام..."></textarea>
-        <button onclick="checkHealth()">تحليل كافة الأعراض</button>
-    </div>
+    <p style="text-align: right;">صفي أعراضك بالتفصيل (صداع، كحة، ألم معدة، زكام، إرهاق...):</p>
+    <textarea id="userInput" placeholder="اكتبي كل اللي حاسة بيه هنا..."></textarea>
+    <button onclick="smartCheck()">تحليل كافة الأعراض</button>
 
     <div id="result">
-        <h3 style="color: #2c3e50;">نتائج التحليل الشامل:</h3>
-        <div id="resultsList"></div>
+        <h2 style="text-align: right; color: #3c4043;">النتائج المقترحة لحالتك:</h2>
+        <div id="findings"></div>
     </div>
 
-    <div class="programmer-credit">
-        تطوير المبرمجة <br>
-        <strong>💎 عبير حلمي 💎</strong>
-    </div>
+    <div class="programmer">تمت البرمجة بواسطة <strong>💎 عبير حلمي 💎</strong></div>
 </div>
 
 <script>
-    function checkHealth() {
-        const input = document.getElementById('symptomInput').value.trim();
-        const resultDiv = document.getElementById('result');
-        const resultsList = document.getElementById('resultsList');
+    function smartCheck() {
+        const text = document.getElementById('userInput').value.trim();
+        const findings = document.getElementById('findings');
+        const resDiv = document.getElementById('result');
 
-        if (input === "") {
-            alert("من فضلك صفي الأعراض أولاً");
-            return;
-        }
+        if (!text) { alert("من فضلك صفي أعراضك أولاً"); return; }
 
-        const database = [
-            { keys: ["صداع", "رأس"], title: "صداع/إجهاد", info: "قد يكون بسبب التوتر أو نقص السوائل. ارتاحي في مكان هادئ." },
-            { keys: ["كحة", "سعال", "بلغم"], title: "مشاكل تنفسية", info: "اشربي سوائل دافئة. إذا زاد البلغم أو ضيق التنفس، استشيري طبيباً." },
-            { keys: ["حرارة", "سخونة", "سخن"], title: "ارتفاع درجة الحرارة", info: "استخدمي كمادات ماء فاتر وباراسيتامول (بعد استشارة صيدلي). إذا استمرت، ابحثي عن مصدر العدوى." },
-            { keys: ["معدة", "بطن", "مغص"], title: "اضطراب هضمي", info: "تجنبي الأكل الثقيل. اشربي نعناع أو يانسون دافئ." },
-            { keys: ["ظهر", "عظام", "مفاصل"], title: "آلام هيكلية", info: "قد يكون إجهاداً عضلياً أو نقص فيتامين د. حاولي تدفئة المنطقة والراحة." },
-            { keys: ["دوخة", "دوار"], title: "دوار/دوخة", info: "تأكدي من قياس ضغط الدم ونسبة السكر، وتجنبي النهوض المفاجئ." },
-            { keys: ["أسنان", "ضرس"], title: "ألم أسنان", info: "مضمضة بماء وملح فاتر واستشيري طبيب الأسنان فوراً." },
-            { keys: ["خمول", "تعب", "كسل"], title: "إرهاق عام", info: "قد تحتاجين لتحسين جودة النوم أو فحص نسبة الحديد في الدم." }
+        // قاعدة بيانات ضخمة ومرنة (تتعرف على الكلمة بأكثر من شكل)
+        const symptomsDb = [
+            { tags: ["معد", "بطن", "غثيان", "قيء", "ترجيع", "هضم", "مغص"], title: "اضطرابات الجهاز الهضمي", info: "قد تشير للألم في المعدة أو عسر الهضم. يُنصح بشرب سوائل دافئة وتجنب الأكل الدسم." },
+            { tags: ["صداع", "رأس", "دماغ", "شقيقة"], title: "صداع وإجهاد", info: "غالباً ناتج عن التوتر أو قلة النوم. ارتاحي في مكان هادئ واشربي ماء." },
+            { tags: ["كحة", "كحه", "سعال", "بلغم", "صدر", "تنفس"], title: "أعراض الجهاز التنفسي", info: "قد تكون نزلة برد أو حساسية. السوائل الدافئة مهمة، وإذا زاد ضيق التنفس يجب رؤية طبيب." },
+            { tags: ["حرارة", "سخون", "سخن", "حمي"], title: "ارتفاع درجة الحرارة", info: "دليل على عدوى. استخدمي كمادات فاتر، وإذا تخطت 39 درجة استشيري طبيب." },
+            { tags: ["عظم", "ظهر", "مفصل", "رقب", "جسمي"], title: "آلام العظام والعضلات", info: "قد يكون إرهاقاً بدنياً. التدفئة والراحة ضروريان." },
+            { tags: ["زكام", "برد", "رشح", "أنف"], title: "نزلة برد / إنفلونزا", info: "راحة تامة، فيتامين C، ومشروبات دافئة." },
+            { tags: ["دوخ", "دوار", "توازن"], title: "دوار وعدم اتزان", info: "قد يتعلق بضغط الدم أو الإجهاد. تجنبي الحركة المفاجئة." }
         ];
 
-        let foundResults = [];
-        
-        // البحث الذكي: يمر على كل الأعراض في قاعدة البيانات ويشوف لو موجودة في كلام المستخدم
-        database.forEach(item => {
-            for (let k of item.keys) {
-                if (input.includes(k)) {
-                    foundResults.push(`<div class="symptom-item"><b>📌 ${item.title}:</b> ${item.info}</div>`);
-                    break; // نكتفي بواحدة من الكلمات المفتاحية لنفس المرض
-                }
+        let found = [];
+        symptomsDb.forEach(item => {
+            // كود ذكي يبحث عن "جزء" من الكلمة (عشان يفهم كحة وكحه وكحتي)
+            let isMatch = item.tags.some(tag => text.includes(tag));
+            if (isMatch) {
+                found.push(`<div class="card"><b>📌 ${item.title}:</b><br>${item.info}</div>`);
             }
         });
 
-        resultDiv.style.display = "block";
-        if (foundResults.length > 0) {
-            resultsList.innerHTML = foundResults.join("");
+        resDiv.style.display = "block";
+        if (found.length > 0) {
+            findings.innerHTML = found.join("");
         } else {
-            resultsList.innerHTML = "<p>لم أستطع تحديد أعراض معينة. يرجى وصف الحالة بدقة أكبر أو زيارة الطبيب فوراً للضرورة.</p>";
+            findings.innerHTML = "<div class='card'>لم يتم العثور على عرض محدد. صفي حالتك بكلمات مختلفة أو استشيري الطبيب فوراً.</div>";
         }
     }
 </script>
-
 </body>
 </html>
-
